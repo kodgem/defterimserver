@@ -13,6 +13,8 @@ class Firma(models.Model):
     FirmaLisansAnahtari = models.CharField(max_length=250, verbose_name="Firma Lisans Anahtarı")
     FirmaLisansBaslangicTarihi = models.DateTimeField(default=timezone.now(),verbose_name="Firma Lisans Başlangıç Tarihi")
     FirmaLisansBitisTarihi = models.DateTimeField(default=timezone.now(),verbose_name="Firma Lisans bitiş Tarihi")
+    FirmaLisansSayisi = models.IntegerField(default=1,verbose_name="Firma Lisans Sayısı")
+    FirmaLisansKayitSayisi = models.IntegerField(default=0,verbose_name="Firma Lisans Kayıt Sayısı")
     FirmaKayıtTarihi = models.DateTimeField(default=timezone.now(),verbose_name="Firma Kayıt Tarihi")
     FirmaGuncellemeTarihi = models.DateTimeField(default=timezone.now(),verbose_name="Firma Guncelleme Tarihi")
     FirmaToplamFiyat = models.CharField(verbose_name="Firma Toplam Fiyat", max_length=50)

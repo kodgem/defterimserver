@@ -40,3 +40,44 @@ def FirmaGetir(request):
         else:
             sonuc_json = {'Sonuc': 'Sonuç Bulunamadı', 'KOD': status.HTTP_404_NOT_FOUND, 'Firma': None}
             return Response(sonuc_json, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def FirmaLisansGir(request):
+    if request.method == 'POST':
+        data = JSONParser().parse(request)
+        firmaid = data.get('FirmaID')
+        firmalisansanahtari = data.get('FirmaLisansAnahtari')
+
+        if firmaid and firmalisansanahtari:
+            firma = Firma.objects.filter(FirmaID=firmaid).first()
+            if firma:
+                if firma.FirmaLisansKayitSayisi < firma.FirmaLisansSayisi:
+                    # lisans başarılı
+                    firma.FirmaLisansKayitSayisi = firma.FirmaLisansKayitSayisi + 1
+                    firma.save()
+                    kalangunsayisi = (firma.FirmaLisansBitisTarihi - firma.FirmaLisansBaslangicTarihi).days
+                    sonucfirma = {
+                        'FirmaID': firma.FirmaID,
+                        'FirmaAdi': firma.FirmaAdi,
+                        'FirmaAktiflik': firma.FirmaAktiflik,
+                        'FirmaLisansSuresi': firma.FirmaLisansSuresi,
+                        'FirmaLisansAnahtari': firma.FirmaLisansAnahtari,
+                        'FirmaMesajDurumu': firma.FirmaMesajDurumu,
+                        'FirmaMesaj': firma.FirmaMesaji,
+                        'FirmaLisansKalanGunSayisi': kalangunsayisi
+                    }
+                    sonucjson = {'Sonuc': 'Başarılı', 'KOD': status.HTTP_200_OK, 'Firma': sonucfirma}
+                    return Response(sonucjson)
+                else:
+                    sonucjson = {'Sonuc': 'Lisans Kayıt Sayısı Dolmuş', 'KOD': status.HTTP_400_BAD_REQUEST,
+                                 'Firma': None}
+                    return Response(sonucjson)
+            else:
+                sonucjson = {'Sonuc': 'Firma Bulunamadı', 'KOD': status.HTTP_404_NOT_FOUND,
+                             'Firma': None}
+                return Response(sonucjson)
+
+        else:
+            sonucjson = {'Sonuc': 'Geçersiz Bilgi', 'KOD': status.HTTP_400_BAD_REQUEST, 'Firma': None}
+            return Response(sonucjson)
